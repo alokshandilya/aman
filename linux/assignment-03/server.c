@@ -41,6 +41,12 @@ void addFruit(const char *name, int quantity, const char *lastSold) {
   pthread_mutex_unlock(&databaseLock);
 }
 
+void initializeFruits() {
+  addFruit("apple", 50, "N/A");
+  addFruit("banana", 75, "N/A");
+  addFruit("orange", 75, "N/A");
+}
+
 void addClient(struct sockaddr_in clientAddr) {
   pthread_mutex_lock(&clientsLock);
 
@@ -61,7 +67,8 @@ int sellFruit(const char *name, int quantitySold) {
     if (strcmp(fruitDatabase[i].name, name) == 0) {
       if (fruitDatabase[i].quantity >= quantitySold) {
         fruitDatabase[i].quantity -= quantitySold;
-        printf("%d %s(s) sold\n", quantitySold, name);
+        printf("%d %s(s) sold. Remaining %s(s): %d\n", quantitySold, name, name,
+               fruitDatabase[i].quantity);
         hasTransaction = 1;
       } else {
         printf("Not enough %s(s) in stock\n", name);
@@ -182,6 +189,9 @@ int main() {
     close(serverSocket);
     exit(EXIT_FAILURE);
   }
+
+  // Initialize the initial quantities of fruits
+  initializeFruits();
 
   printf("Server listening on port 12345...\n");
 
